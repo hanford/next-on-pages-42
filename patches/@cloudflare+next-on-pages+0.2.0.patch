@@ -1,0 +1,125 @@
+diff --git a/node_modules/@cloudflare/next-on-pages/dist/index.js b/node_modules/@cloudflare/next-on-pages/dist/index.js
+index 7592663..57f83ef 100644
+--- a/node_modules/@cloudflare/next-on-pages/dist/index.js
++++ b/node_modules/@cloudflare/next-on-pages/dist/index.js
+@@ -5871,38 +5871,55 @@ var prepVercel = async () => {
+   console.log("\u26A1\uFE0F");
+   console.log("\u26A1\uFE0F Installing 'vercel' CLI...");
+   console.log("\u26A1\uFE0F");
+-  const vercelBuild = (0, import_child_process.spawn)("npm", ["install", "-D", "vercel"]);
+-  vercelBuild.stdout.on("data", (data2) => {
+-    const lines = data2.toString().split("\n");
+-    lines.map((line) => {
+-      console.log(`\u25B2 ${line}`);
+-    });
+-  });
+-  vercelBuild.stderr.on("data", (data2) => {
+-    const lines = data2.toString().split("\n");
+-    lines.map((line) => {
+-      console.log(`\u25B2 ${line}`);
+-    });
+-  });
+-  await new Promise((resolve2, reject) => {
+-    vercelBuild.on("close", (code) => {
+-      if (code === 0) {
+-        resolve2(null);
+-      } else {
+-        reject();
+-      }
+-    });
+-  });
++  const pkgManager = "pnpm"//await getPkgManager();
++  let vercelBuild;
++
++
++  // switch (pkgManager) {
++  //   case "pnpm":
++  //     console.log('⚡️ Detected "pnpm", running pnpm add -D vercel');
++  //     console.log("⚡️");
++  //     vercelBuild = (0, import_child_process.spawn)("pnpm", ["add", "-D", "vercel"]);
++  //     break;
++  //   case "yarn":
++  //     console.log('⚡️ Detected "yarn", running yarn add -D vercel');
++  //     console.log("⚡️");
++  //     vercelBuild = (0, import_child_process.spawn)("yarn", ["add", "-D", "vercel"]);
++  //     break;
++  //   default:
++  //     vercelBuild = (0, import_child_process.spawn)("npm", ["install", "-D", "vercel"]);
++  // }
++  // vercelBuild.stdout.on("data", (data2) => {
++  //   const lines = data2.toString().split("\n");
++  //   lines.map((line) => {
++  //     console.log(`\u25B2 ${line}`);
++  //   });
++  // });
++  // vercelBuild.stderr.on("data", (data2) => {
++  //   const lines = data2.toString().split("\n");
++  //   lines.map((line) => {
++  //     console.log(`\u25B2 ${line}`);
++  //   });
++  // });
++  // await new Promise((resolve2, reject) => {
++  //   vercelBuild.on("close", (code) => {
++  //     if (code === 0) {
++  //       resolve2(null);
++  //     } else {
++  //       reject();
++  //     }
++  //   });
++  // });
+   console.log("\u26A1\uFE0F");
+   console.log("\u26A1\uFE0F");
+-  console.log("\u26A1\uFE0F Completed 'npx vercel build'.");
++  console.log("\u26A1\uFE0F Completed 'pnpm vercel build'.");
+   console.log("\u26A1\uFE0F");
+ };
+ var buildVercel = async () => {
+   console.log("\u26A1\uFE0F");
+-  console.log("\u26A1\uFE0F Building project with 'npx vercel build'...");
++  console.log("\u26A1\uFE0F Building project with 'pnpm vercel build'...");
+   console.log("\u26A1\uFE0F");
+-  const vercelBuild = (0, import_child_process.spawn)("npx", ["vercel", "build"]);
++  const vercelBuild = (0, import_child_process.spawn)("pnpm", ["vercel", "build"]);
+   vercelBuild.stdout.on("data", (data2) => {
+     const lines = data2.toString().split("\n");
+     lines.map((line) => {
+@@ -6281,3 +6298,39 @@ var main = async ({
+     })
+   );
+ })();
++
++
++async function exists(path) {
++  try {
++    await access(path);
++    return true;
++  } catch {
++    return false;
++  }
++}
++
++async function getPkgManager() {
++  // Use npm_config_user_agent if it's set
++  const userAgent = process.env.npm_config_user_agent;
++
++  if (userAgent) {
++    if (userAgent.startsWith("yarn")) {
++      return "yarn";
++    } else if (userAgent.startsWith("pnpm")) {
++      return "pnpm";
++    } else {
++      return "npm";
++    }
++  }
++
++  const hasYarnLock = await exists("yarn.lock");
++  const hasPnpmLock = await exists("pnpm-lock.yaml");
++
++  if (hasYarnLock) {
++    return "yarn";
++  } else if (hasPnpmLock) {
++    return "pnpm";
++  } else {
++    return "npm";
++  }
++}
