@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Link href="/my/nested/help">Visit Help Page</Link>
           </li>
           <li>
-            <Link href="/my/nested/">Visit Root Page</Link>
+            <Link href="/my/nested">Visit Root Page</Link>
           </li>
         </ol>
 

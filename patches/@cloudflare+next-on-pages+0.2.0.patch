@@ -1,125 +1,121 @@
+diff --git a/node_modules/@cloudflare/next-on-pages/.DS_Store b/node_modules/@cloudflare/next-on-pages/.DS_Store
+new file mode 100644
+index 0000000..73fd07e
+Binary files /dev/null and b/node_modules/@cloudflare/next-on-pages/.DS_Store differ
 diff --git a/node_modules/@cloudflare/next-on-pages/dist/index.js b/node_modules/@cloudflare/next-on-pages/dist/index.js
-index 7592663..57f83ef 100644
+index 7592663..5c439ce 100644
 --- a/node_modules/@cloudflare/next-on-pages/dist/index.js
 +++ b/node_modules/@cloudflare/next-on-pages/dist/index.js
-@@ -5871,38 +5871,55 @@ var prepVercel = async () => {
-   console.log("\u26A1\uFE0F");
-   console.log("\u26A1\uFE0F Installing 'vercel' CLI...");
-   console.log("\u26A1\uFE0F");
--  const vercelBuild = (0, import_child_process.spawn)("npm", ["install", "-D", "vercel"]);
--  vercelBuild.stdout.on("data", (data2) => {
--    const lines = data2.toString().split("\n");
--    lines.map((line) => {
--      console.log(`\u25B2 ${line}`);
--    });
--  });
--  vercelBuild.stderr.on("data", (data2) => {
--    const lines = data2.toString().split("\n");
--    lines.map((line) => {
--      console.log(`\u25B2 ${line}`);
--    });
--  });
--  await new Promise((resolve2, reject) => {
--    vercelBuild.on("close", (code) => {
--      if (code === 0) {
--        resolve2(null);
--      } else {
--        reject();
--      }
--    });
--  });
-+  const pkgManager = "pnpm"//await getPkgManager();
-+  let vercelBuild;
-+
-+
-+  // switch (pkgManager) {
-+  //   case "pnpm":
-+  //     console.log('⚡️ Detected "pnpm", running pnpm add -D vercel');
-+  //     console.log("⚡️");
-+  //     vercelBuild = (0, import_child_process.spawn)("pnpm", ["add", "-D", "vercel"]);
-+  //     break;
-+  //   case "yarn":
-+  //     console.log('⚡️ Detected "yarn", running yarn add -D vercel');
-+  //     console.log("⚡️");
-+  //     vercelBuild = (0, import_child_process.spawn)("yarn", ["add", "-D", "vercel"]);
-+  //     break;
-+  //   default:
-+  //     vercelBuild = (0, import_child_process.spawn)("npm", ["install", "-D", "vercel"]);
-+  // }
-+  // vercelBuild.stdout.on("data", (data2) => {
-+  //   const lines = data2.toString().split("\n");
-+  //   lines.map((line) => {
-+  //     console.log(`\u25B2 ${line}`);
-+  //   });
-+  // });
-+  // vercelBuild.stderr.on("data", (data2) => {
-+  //   const lines = data2.toString().split("\n");
-+  //   lines.map((line) => {
-+  //     console.log(`\u25B2 ${line}`);
-+  //   });
-+  // });
-+  // await new Promise((resolve2, reject) => {
-+  //   vercelBuild.on("close", (code) => {
-+  //     if (code === 0) {
-+  //       resolve2(null);
-+  //     } else {
-+  //       reject();
-+  //     }
-+  //   });
-+  // });
-   console.log("\u26A1\uFE0F");
-   console.log("\u26A1\uFE0F");
--  console.log("\u26A1\uFE0F Completed 'npx vercel build'.");
-+  console.log("\u26A1\uFE0F Completed 'pnpm vercel build'.");
-   console.log("\u26A1\uFE0F");
+@@ -4837,7 +4837,7 @@ pp.readWord = function() {
+   }
+   return this.finishToken(type, word);
  };
- var buildVercel = async () => {
-   console.log("\u26A1\uFE0F");
--  console.log("\u26A1\uFE0F Building project with 'npx vercel build'...");
-+  console.log("\u26A1\uFE0F Building project with 'pnpm vercel build'...");
-   console.log("\u26A1\uFE0F");
--  const vercelBuild = (0, import_child_process.spawn)("npx", ["vercel", "build"]);
-+  const vercelBuild = (0, import_child_process.spawn)("pnpm", ["vercel", "build"]);
-   vercelBuild.stdout.on("data", (data2) => {
-     const lines = data2.toString().split("\n");
-     lines.map((line) => {
-@@ -6281,3 +6298,39 @@ var main = async ({
-     })
-   );
- })();
-+
-+
-+async function exists(path) {
-+  try {
-+    await access(path);
-+    return true;
-+  } catch {
-+    return false;
-+  }
-+}
-+
-+async function getPkgManager() {
-+  // Use npm_config_user_agent if it's set
-+  const userAgent = process.env.npm_config_user_agent;
-+
-+  if (userAgent) {
-+    if (userAgent.startsWith("yarn")) {
-+      return "yarn";
-+    } else if (userAgent.startsWith("pnpm")) {
-+      return "pnpm";
-+    } else {
-+      return "npm";
+-var version = "8.8.0";
++var version = "8.8.1";
+ Parser.acorn = {
+   Parser,
+   version,
+@@ -5586,12 +5586,22 @@ var GENERATOR = {
+     if (node.static) {
+       state.write("static ");
+     }
++    if (node.computed) {
++      state.write("[");
 +    }
+     this[node.key.type](node.key, state);
++    if (node.computed) {
++      state.write("]");
++    }
+     if (node.value == null) {
++      if (node.key.type[0] !== "F") {
++        state.write(";");
++      }
+       return;
+     }
+     state.write(" = ");
+     this[node.value.type](node.value, state);
++    state.write(";");
+   },
+   ObjectPattern(node, state) {
+     state.write("{");
+@@ -5950,7 +5960,34 @@ var transform = async ({
+     );
+     (0, import_process.exit)(1);
+   }
+-  const functionsDir = (0, import_path.resolve)(".vercel/output/functions");
++  let routesManifest;
++  try {
++    routesManifest = JSON.parse(
++      await (0, import_promises.readFile)(".next/routes-manifest.json", "utf8")
++    );
++  } catch {
++    console.error(
++      "\u26A1\uFE0F ERROR: Could not read ./next/routes-manifest.json files"
++    );
++    console.error(
++      "\u26A1\uFE0F Please report this at https://github.com/cloudflare/next-on-pages/issues."
++    );
++    (0, import_process.exit)(1);
 +  }
-+
-+  const hasYarnLock = await exists("yarn.lock");
-+  const hasPnpmLock = await exists("pnpm-lock.yaml");
-+
-+  if (hasYarnLock) {
-+    return "yarn";
-+  } else if (hasPnpmLock) {
-+    return "pnpm";
-+  } else {
-+    return "npm";
++  if (routesManifest.version !== 3) {
++    console.error(
++      `\u26A1\uFE0F ERROR: Unknown functions manifest version. Expected 3 but found ${routesManifest.version}.`
++    );
++    console.error(
++      "\u26A1\uFE0F Please report this at https://github.com/cloudflare/next-on-pages/issues."
++    );
++    (0, import_process.exit)(1);
 +  }
-+}
++  const basePath = routesManifest.basePath ?? "";
++  if (basePath !== "") {
++    console.log("\u26A1\uFE0F Using basePath ", basePath);
++  }
++  const functionsDir = (0, import_path.resolve)(".vercel/output/functions" + basePath);
+   let functionsExist = false;
+   try {
+     await (0, import_promises.stat)(functionsDir);
+@@ -6195,7 +6232,8 @@ var transform = async ({
+     target: "es2021",
+     platform: "neutral",
+     define: {
+-      __CONFIG__: JSON.stringify(config)
++      __CONFIG__: JSON.stringify(config),
++      __BASE_PATH__: JSON.stringify(basePath)
+     },
+     outfile: ".vercel/output/static/_worker.js"
+   });
+diff --git a/node_modules/@cloudflare/next-on-pages/templates/_worker.js/.DS_Store b/node_modules/@cloudflare/next-on-pages/templates/_worker.js/.DS_Store
+new file mode 100644
+index 0000000..71a5cfd
+Binary files /dev/null and b/node_modules/@cloudflare/next-on-pages/templates/_worker.js/.DS_Store differ
+diff --git a/node_modules/@cloudflare/next-on-pages/templates/_worker.js/index.ts b/node_modules/@cloudflare/next-on-pages/templates/_worker.js/index.ts
+index 42bf66a..f1c678e 100644
+--- a/node_modules/@cloudflare/next-on-pages/templates/_worker.js/index.ts
++++ b/node_modules/@cloudflare/next-on-pages/templates/_worker.js/index.ts
+@@ -126,6 +126,8 @@ declare const __FUNCTIONS__: EdgeFunctions;
+ 
+ declare const __MIDDLEWARE__: EdgeFunctions;
+ 
++declare const __BASE_PATH__: string;
++
+ export default {
+   async fetch(request, env, context) {
+     const { pathname } = new URL(request.url);
+@@ -145,9 +147,15 @@ export default {
+       for (const matcher of matchers) {
+         if (matcher.regexp) {
+           const regexp = new RegExp(matcher?.regexp);
++          let nextPathname = __BASE_PATH__
++            ? // remove basePath from URL, also smoosh `//` into `/`
++              pathname.replace(__BASE_PATH__, "/").replace("//", "/")
++            : pathname;
++
+           if (
+-            pathname.match(regexp) ||
+-            `${pathname}/page`.replace("//page", "/page").match(regexp)
++            nextPathname.match(regexp) ||
++            `${nextPathname}/page`.replace("//page", "/page").match(regexp) ||
++            `${nextPathname}/page`.replace("//page", "/page").match(regexp)
+           ) {
+             found = true;
+             break;
